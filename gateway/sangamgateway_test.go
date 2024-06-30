@@ -32,10 +32,18 @@ func TestGatewayRouting(t *testing.T) {
 	server := httptest.NewServer(handler)
 	defer server.Close()
 
-	var config = gatewayconfig.GatewayConfig{
-		PORT: 5000,
-		RoutesMap: map[string]string{
-			HI_ROUTE: server.URL,
+	var config = gatewayconfig.Config{
+		Port: 5000,
+		Paths: map[string]gatewayconfig.Path{
+			"/hi": {
+				Methods: map[string]gatewayconfig.Method{
+					"get": {
+						Backend: gatewayconfig.Backend{
+							Address: server.URL,
+						},
+					},
+				},
+			},
 		},
 	}
 
@@ -64,11 +72,27 @@ func TestGatewayMultipleRouting(t *testing.T) {
 	server := httptest.NewServer(handler)
 	defer server.Close()
 
-	var config = gatewayconfig.GatewayConfig{
-		PORT: 5000,
-		RoutesMap: map[string]string{
-			HI_ROUTE:    server.URL,
-			HELLO_ROUTE: server.URL,
+	var config = gatewayconfig.Config{
+		Port: 5000,
+		Paths: map[string]gatewayconfig.Path{
+			"/hi": {
+				Methods: map[string]gatewayconfig.Method{
+					"get": {
+						Backend: gatewayconfig.Backend{
+							Address: server.URL,
+						},
+					},
+				},
+			},
+			"/hello": {
+				Methods: map[string]gatewayconfig.Method{
+					"get": {
+						Backend: gatewayconfig.Backend{
+							Address: server.URL,
+						},
+					},
+				},
+			},
 		},
 	}
 
@@ -105,10 +129,18 @@ func TestGatewayHeadersRelay(t *testing.T) {
 	server := httptest.NewServer(handler)
 	defer server.Close()
 
-	var config = gatewayconfig.GatewayConfig{
-		PORT: 5000,
-		RoutesMap: map[string]string{
-			HI_ROUTE: server.URL,
+	var config = gatewayconfig.Config{
+		Port: 5000,
+		Paths: map[string]gatewayconfig.Path{
+			"/hi": {
+				Methods: map[string]gatewayconfig.Method{
+					"get": {
+						Backend: gatewayconfig.Backend{
+							Address: server.URL,
+						},
+					},
+				},
+			},
 		},
 	}
 
@@ -141,11 +173,27 @@ func TestGatewayMultipleServers(t *testing.T) {
 	nserver := httptest.NewServer(handler)
 	defer nserver.Close()
 
-	var config = gatewayconfig.GatewayConfig{
-		PORT: 5000,
-		RoutesMap: map[string]string{
-			HI_ROUTE:    server.URL,
-			HELLO_ROUTE: nserver.URL,
+	var config = gatewayconfig.Config{
+		Port: 5000,
+		Paths: map[string]gatewayconfig.Path{
+			"/hi": {
+				Methods: map[string]gatewayconfig.Method{
+					"get": {
+						Backend: gatewayconfig.Backend{
+							Address: server.URL,
+						},
+					},
+				},
+			},
+			"/hello": {
+				Methods: map[string]gatewayconfig.Method{
+					"get": {
+						Backend: gatewayconfig.Backend{
+							Address: nserver.URL,
+						},
+					},
+				},
+			},
 		},
 	}
 

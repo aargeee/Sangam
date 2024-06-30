@@ -9,17 +9,17 @@ import (
 )
 
 type Gateway struct {
-	config *gatewayconfig.GatewayConfig
+	config *gatewayconfig.Config
 	port   int
 	http.Handler
 }
 
-func CreateGateway(config *gatewayconfig.GatewayConfig, port int) *Gateway {
+func CreateGateway(config *gatewayconfig.Config, port int) *Gateway {
 
 	router := http.NewServeMux()
 	router.HandleFunc(constants.SANGAM_HEALTHZ, func(w http.ResponseWriter, r *http.Request) {})
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		baseURL := config.RoutesMap[r.URL.Path]
+		baseURL := config.Paths[r.URL.Path].Methods["get"].Backend.Address
 		res, err := http.Get(baseURL + r.URL.Path)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

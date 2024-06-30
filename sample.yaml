@@ -1,0 +1,10 @@
+PORT: 5000
+paths:
+  /HelloPy:
+    get:
+      x-backend:
+        address: "url to your python function"
+  /HelloGo:
+    get:
+      x-backend:
+        address:  "url to your go function"
