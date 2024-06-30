@@ -121,3 +121,51 @@ func TestGatewayHeadersRelay(t *testing.T) {
 	assert.Equal[string](t, res.Body.String(), "TEST STRING")
 	assert.Equal[string](t, res.Header().Get("RGHeader"), "aargeee")
 }
+
+func TestGatewayMultipleServers(t *testing.T) {
+
+	HI_ROUTE := "/hi"
+	HELLO_ROUTE := "/hello"
+
+	handler := http.NewServeMux()
+	handler.HandleFunc(HI_ROUTE, func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "TEST STRING")
+	})
+	handler.HandleFunc(HELLO_ROUTE, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusAccepted)
+		fmt.Fprintf(w, "http://%s", r.Host)
+	})
+	server := httptest.NewServer(handler)
+	defer server.Close()
+
+	nserver := httptest.NewServer(handler)
+	defer nserver.Close()
+
+	var config = gatewayconfig.GatewayConfig{
+		PORT: 5000,
+		RoutesMap: map[string]string{
+			HI_ROUTE:    server.URL,
+			HELLO_ROUTE: nserver.URL,
+		},
+	}
+
+	gw := gateway.CreateGateway(&config, 5000)
+	t.Run("Test /hi route", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, HI_ROUTE, nil)
+		assert.NoError(t, err)
+		res := httptest.NewRecorder()
+		gw.ServeHTTP(res, req)
+		assert.Equal[int](t, res.Code, http.StatusOK)
+		assert.Equal[string](t, res.Body.String(), "TEST STRING")
+	})
+
+	t.Run("Test /hello route", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, HELLO_ROUTE, nil)
+		assert.NoError(t, err)
+		res := httptest.NewRecorder()
+		gw.ServeHTTP(res, req)
+		assert.Equal[int](t, res.Code, http.StatusAccepted)
+		assert.Equal[string](t, res.Body.String(), nserver.URL)
+	})
+
+}
