@@ -1,15 +1,19 @@
 package gateway
 
+import gatewayconfig "github.com/aargeee/sangam/GatewayConfig"
+
 type Gateway struct {
-	port int
+	config gatewayconfig.GatewayConfig
+	port   int
 }
 
-func CreateGateway(port int) *Gateway {
+func CreateGateway(config gatewayconfig.GatewayConfig, port int) *Gateway {
 	return &Gateway{
-		port: port,
+		config: config,
+		port:   port,
 	}
 }
 
-func (g *Gateway) ListenAndServe() {
-
+func (g *Gateway) ListenAndServe() error {
+	return nil
 }
