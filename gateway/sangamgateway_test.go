@@ -47,3 +47,47 @@ func TestGatewayRouting(t *testing.T) {
 	assert.Equal[int](t, res.Code, http.StatusOK)
 	assert.Equal[string](t, res.Body.String(), "TEST STRING")
 }
+
+func TestGatewayMultipleRouting(t *testing.T) {
+
+	HI_ROUTE := "/hi"
+	HELLO_ROUTE := "/hello"
+
+	handler := http.NewServeMux()
+	handler.HandleFunc(HI_ROUTE, func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "TEST STRING")
+	})
+	handler.HandleFunc(HELLO_ROUTE, func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "NEW TEST STRING")
+	})
+	server := httptest.NewServer(handler)
+	defer server.Close()
+
+	var config = gatewayconfig.GatewayConfig{
+		PORT: 5000,
+		RoutesMap: map[string]string{
+			HI_ROUTE:    server.URL,
+			HELLO_ROUTE: server.URL,
+		},
+	}
+
+	gw := gateway.CreateGateway(&config, 5000)
+	t.Run("Test /hi route", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, HI_ROUTE, nil)
+		assert.NoError(t, err)
+		res := httptest.NewRecorder()
+		gw.ServeHTTP(res, req)
+		assert.Equal[int](t, res.Code, http.StatusOK)
+		assert.Equal[string](t, res.Body.String(), "TEST STRING")
+	})
+
+	t.Run("Test /hello route", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, HELLO_ROUTE, nil)
+		assert.NoError(t, err)
+		res := httptest.NewRecorder()
+		gw.ServeHTTP(res, req)
+		assert.Equal[int](t, res.Code, http.StatusOK)
+		assert.Equal[string](t, res.Body.String(), "NEW TEST STRING")
+	})
+
+}
