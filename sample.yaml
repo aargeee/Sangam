@@ -3,8 +3,8 @@ paths:
   /HelloPy:
     get:
       x-backend:
-        address: "url to your python function"
+        address: http://localhost:3000
   /HelloGo:
     get:
       x-backend:
-        address:  "url to your go function"
+        address: http://localhost:3001

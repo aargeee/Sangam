@@ -1,22 +1,21 @@
 package gatewayconfig
 
 import (
-	"log"
 	"os"
 
 	"gopkg.in/yaml.v2"
 )
 
-func ReadConfig(filePath string) {
+func ReadConfig(filePath string) (*Config, error) {
 	data, err := os.ReadFile(filePath)
 	if err != nil {
-		log.Fatalf("error: %v", err)
+		return nil, err
 	}
 
 	var config Config
 	err = yaml.Unmarshal(data, &config)
 	if err != nil {
-		log.Fatalf("error: %v", err)
+		return nil, err
 	}
-
+	return &config, nil
 }
