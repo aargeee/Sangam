@@ -12,5 +12,6 @@ var config = gatewayconfig.GatewayConfig{}
 
 func TestSangamGateway(t *testing.T) {
 	ms_gateway := gateway.CreateGateway(config, 5000)
-	assert.NoError(t, ms_gateway.ListenAndServe())
+	_, err := ms_gateway.GetHandler()
+	assert.NoError(t, err)
 }

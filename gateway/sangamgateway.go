@@ -1,6 +1,10 @@
 package gateway
 
-import gatewayconfig "github.com/aargeee/sangam/GatewayConfig"
+import (
+	"net/http"
+
+	gatewayconfig "github.com/aargeee/sangam/GatewayConfig"
+)
 
 type Gateway struct {
 	config gatewayconfig.GatewayConfig
@@ -14,6 +18,6 @@ func CreateGateway(config gatewayconfig.GatewayConfig, port int) *Gateway {
 	}
 }
 
-func (g *Gateway) ListenAndServe() error {
-	return nil
+func (g *Gateway) GetHandler() (*http.Handler, error) {
+	return nil, nil
 }
