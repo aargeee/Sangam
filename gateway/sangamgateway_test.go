@@ -92,3 +92,32 @@ func TestGatewayMultipleRouting(t *testing.T) {
 	})
 
 }
+
+func TestGatewayHeadersRelay(t *testing.T) {
+
+	HI_ROUTE := "/hi"
+
+	handler := http.NewServeMux()
+	handler.HandleFunc(HI_ROUTE, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("RGHeader", "aargeee")
+		fmt.Fprint(w, "TEST STRING")
+	})
+	server := httptest.NewServer(handler)
+	defer server.Close()
+
+	var config = gatewayconfig.GatewayConfig{
+		PORT: 5000,
+		RoutesMap: map[string]string{
+			HI_ROUTE: server.URL,
+		},
+	}
+
+	gw := gateway.CreateGateway(&config, 5000)
+	req, err := http.NewRequest(http.MethodGet, HI_ROUTE, nil)
+	assert.NoError(t, err)
+	res := httptest.NewRecorder()
+	gw.ServeHTTP(res, req)
+	assert.Equal[int](t, res.Code, http.StatusOK)
+	assert.Equal[string](t, res.Body.String(), "TEST STRING")
+	assert.Equal[string](t, res.Header().Get("RGHeader"), "aargeee")
+}

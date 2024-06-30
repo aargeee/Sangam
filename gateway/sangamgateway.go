@@ -27,6 +27,12 @@ func CreateGateway(config *gatewayconfig.GatewayConfig, port int) *Gateway {
 		}
 		defer res.Body.Close()
 
+		for key, values := range res.Header {
+			for _, value := range values {
+				w.Header().Add(key, value)
+			}
+		}
+
 		w.WriteHeader(res.StatusCode)
 		_, err = io.Copy(w, res.Body)
 		if err != nil {
