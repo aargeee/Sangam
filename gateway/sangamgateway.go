@@ -7,12 +7,12 @@ import (
 )
 
 type Gateway struct {
-	config gatewayconfig.GatewayConfig
+	config *gatewayconfig.GatewayConfig
 	port   int
 	http.Handler
 }
 
-func CreateGateway(config gatewayconfig.GatewayConfig, port int) *Gateway {
+func CreateGateway(config *gatewayconfig.GatewayConfig, port int) *Gateway {
 
 	router := http.NewServeMux()
 
