@@ -11,10 +11,15 @@ import (
 	"github.com/alecthomas/assert/v2"
 )
 
-var config = gatewayconfig.GatewayConfig{}
+var config = gatewayconfig.GatewayConfig{
+	PORT: 5000,
+	RoutesMap: map[string]string{
+		"/hi": "http://localhost:3000",
+	},
+}
 
 func TestSangamGateway(t *testing.T) {
-	gw := gateway.CreateGateway(&config, 5000)
+	gw := gateway.CreateGateway(nil, 5000)
 	req, err := http.NewRequest(http.MethodGet, constants.SANGAM_HEALTHZ, nil)
 	assert.NoError(t, err)
 	res := httptest.NewRecorder()
