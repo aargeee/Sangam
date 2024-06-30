@@ -9,15 +9,16 @@ import (
 type Gateway struct {
 	config gatewayconfig.GatewayConfig
 	port   int
+	http.Handler
 }
 
 func CreateGateway(config gatewayconfig.GatewayConfig, port int) *Gateway {
-	return &Gateway{
-		config: config,
-		port:   port,
-	}
-}
 
-func (g *Gateway) GetHandler() (*http.Handler, error) {
-	return nil, nil
+	router := http.NewServeMux()
+
+	return &Gateway{
+		config:  config,
+		port:    port,
+		Handler: router,
+	}
 }
