@@ -58,6 +58,7 @@ func TestGatewayMultipleRouting(t *testing.T) {
 		fmt.Fprint(w, "TEST STRING")
 	})
 	handler.HandleFunc(HELLO_ROUTE, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusAccepted)
 		fmt.Fprint(w, "NEW TEST STRING")
 	})
 	server := httptest.NewServer(handler)
@@ -86,7 +87,7 @@ func TestGatewayMultipleRouting(t *testing.T) {
 		assert.NoError(t, err)
 		res := httptest.NewRecorder()
 		gw.ServeHTTP(res, req)
-		assert.Equal[int](t, res.Code, http.StatusOK)
+		assert.Equal[int](t, res.Code, http.StatusAccepted)
 		assert.Equal[string](t, res.Body.String(), "NEW TEST STRING")
 	})
 
